@@ -1,0 +1,41 @@
+/*code below is to reduce system added padding and margins*/
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+} 
+
+body {
+    background-color: darkcyan;
+    color: purple;
+}
+div {
+    display: inline;
+}
+/* .Warrior1{
+
+} */
+.Warrior2{
+ float: right;  
+}
+
+.cardDeck1{
+height: 300px;
+width: 400px;
+background-color: white;
+margin: 3px;
+}
+.cardDeck2{
+height: 300px;
+width: 400px;
+background-color: grey;
+margin: 3px;
+} 
+
+#cardFlipped{
+    height: 200px;
+    width: 100px;
+    background-color: indianred;
+    margin: 10px;
+}
+
