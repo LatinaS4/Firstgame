@@ -1,42 +1,83 @@
-/* experimenting with a deck and shuffle will build out today.
-function card(value, name, suit){
-    this.value = value;
-    this.name = name;
-    this.suit = suit;
-}
-function deck(){
-    this.names = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
-    this.suits = ['Hearts', 'Diamonds', 'Spades', 'Clubs'];
-    let cards = [];
+suit = '☃☂☁☀'.split('');
+let number = 'A,2,3,4,5,6,7,8,9,10,J,Q,K'.split(',');
+let deck=[];
+let turn=0;
 
-    for( let s = 0; s < this.suits.length; s++ ) {
-        for( let n = 0; n < this.names.length; n++ ) {
-            cards.push( new card ( n+1, this.names[n], this.suits[s]));
-        }
+function shuffle(a) {
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
     }
-
-    return cards;
+    return a;
 }
 
-let myDeck = new deck();
-console.log(myDeck);
+//Deal the Cards
+function deal(){
+	let t=0;
+	do {  
+		//remove last card from deck
+		let card = deck.splice(-1,1).toString();
+    
+    //remove first character and then assign number values for cards J=11,Q=12,K=13,A=14
+    let cardval = card.substr(1).replace("J","11").replace("Q","12").replace("K","13").replace("A","14");
+    
+   
+    //consider using document.querySelectorAll('.players')[t]
+    document.querySelector('#player'+t).innerHTML+='<div class="card" data-cardvalue="'+cardval+'" data-player="'+t+'" rel="'+card+'" onclick="toss(this)"></div>';
+	    t=Number(!t); //flip from 0 to 1 since there are 2 players
+	}
+	while (deck.length > 0);	
+}
 
-window.onload = function() {
-    for(let i=0; i < myDeck.length; i++){
-        div = document.createElement('div');
-        div.className = 'card';
+function toss(card){
+  //only allow this to run if its the right players turn
+  let check = "player"+turn;
+  
+  if(document.querySelectorAll("#middle .card").length<2 && card.parentElement.id==check){
+    let fragment = document.createDocumentFragment();
+    fragment.appendChild(card);
+    card.innerHTML=card.getAttribute("rel");
+    
+    document.getElementById("middle").appendChild(fragment);     
+    turn=Number(!turn); 
+    //now need to flip the cards, show what they are, calculate who won and track score accordingly!
+    setTimeout(function(){ 
 
-        if(myDeck[i].suit == 'Diamonds'){
-            let ascii_char = '♦';
+      if(document.querySelectorAll("#middle .card").length==2){
+
+        let c0=Number(document.querySelectorAll("#middle .card")[0].dataset.cardvalue);
+        let c1=Number(document.querySelectorAll("#middle .card")[1].dataset.cardvalue);
+
+        //first check if its equal
+        if(c0==c1){
+          //TIE gives everyone a point instead of keeping them and letting winner take all!
+          document.querySelector("#player0_score span").innerHTML++;
+          document.querySelector("#player1_score span").innerHTML++;
+          
         } else {
-            let ascii_char = '&' + myDeck[i].suit.toLowerCase() + ';';
+          if(c0>c1){
+            document.querySelector("#player0_score span").innerHTML++; //cool how ++ works on a stringbut += does not
+          } else {
+            document.querySelector("#player1_score span").innerHTML++;
+          }
         }
-console.log(ascii_char);
 
-        div.innerHTML = '' + myDeck[i].name + '' + ascii_char + '';
-        document.body.appendChild(div);
-    }
+        document.querySelectorAll("#middle .card").forEach(e => e.parentNode.removeChild(e)); //remove cards
+
+      }
+    }, 6000);
+    
+  }
 }
 
-Array.sort(function (a,b){return 0.5 - Math.random()}
-*/
+//Build the deck
+suit.forEach(function(s){
+  number.forEach(function(n){
+    deck.push(s+''+n);
+  });
+});
+
+//shuffle deck 
+shuffle(deck);
+
+deal();
